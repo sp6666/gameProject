@@ -12,7 +12,7 @@ export enum BoxStatus {
 export default class Utils {
   public AccessToken: string = "";
 
-  public showTips(msg) {
+  public showTips(msg: any) {
     /*if (TipsView.instance != null) {
       TipsView.instance.showTip(msg);
     } else {
@@ -25,7 +25,7 @@ export default class Utils {
     this.showTips(dataManager.GetTextById(397));
   }
 
-  public getGoldNumberStr(num) {
+  public getGoldNumberStr(num: number) {
     var str = "";
     var a = num / 100000000;
     if (a >= 1) {
@@ -95,7 +95,7 @@ export default class Utils {
       : (num / 1e8).toFixed(2) + dataManager.GetTextById(291);
   }
 
-  showNodeEffect(node, num, callBack = null) {
+  showNodeEffect(node: cc.Node, num: number, callBack = null) {
     if (null != node) {
       let aniCom = node.getComponent(cc.Animation);
       if (aniCom) {
@@ -114,7 +114,7 @@ export default class Utils {
     }
   }
 
-  deepClone(obj) {
+  deepClone(obj: { [x: string]: any }) {
     let newObj = obj instanceof Array ? [] : {};
     //obj属于基本数据类型,直接返回obj
     if (typeof obj !== "object") {
@@ -129,14 +129,14 @@ export default class Utils {
     return newObj;
   }
 
-  copyData(des, from) {
+  copyData(des: { [x: string]: any }, from: { [x: string]: any }) {
     if (null != from && null != des)
       if (des instanceof Array && from instanceof Array)
         this.copyList(des, from);
       else for (let o in from) des[o] = null != from[o] ? from[o] : des[o];
   }
 
-  copyList(des, from, o = "id", check = false, n = "") {
+  copyList(des: any[], from: any[], o = "id", check = false, n = "") {
     if (null != des && null != from)
       if (0 == from.length) des = from;
       else
@@ -162,7 +162,7 @@ export default class Utils {
         }
   }
 
-  public getBoneIndex(name) {
+  public getBoneIndex(name: string) {
     let index = 1;
     switch (name) {
       case "Ba_hair":
@@ -229,7 +229,7 @@ export default class Utils {
     return index;
   }
 
-  stringFormat(strBase, ...arg) {
+  stringFormat(strBase: any, ...arg: {}[]) {
     let s = strBase;
     if (s) {
       for (let i = 0; i < arg.length; i++) {
@@ -240,7 +240,7 @@ export default class Utils {
     return s;
   }
 
-  stringFormatObject(strBase, obj) {
+  stringFormatObject(strBase: string, obj: { [x: string]: any }) {
     if (strBase && obj) {
       for (let str in obj) {
         let reg = new RegExp("\\{" + str + "\\}", "gm");
@@ -252,7 +252,16 @@ export default class Utils {
   }
 
   public showStringOneByOne(
-    richTextNode,
+    richTextNode: {
+      unschedule: (arg0: () => void) => void;
+      string: string;
+      schedule: (
+        arg0: () => void,
+        arg1: number,
+        arg2: number,
+        arg3: number
+      ) => void;
+    },
     str: string = "",
     speed: number = 0.05,
     callback = null
@@ -272,7 +281,7 @@ export default class Utils {
       }
       strArr.push(text);
     }
-    let templetStr: string = strArr.join(specialChar); // 数组转成待替换字符串
+    let templeStr: string = strArr.join(specialChar); // 数组转成待替换字符串
     for (let index = 0; index < textArr.length; index++) {
       // 转换代替换字符串之后, 删除文字数组多余空字符
       if (textArr[index] === "") {
@@ -280,13 +289,13 @@ export default class Utils {
         index = index - 1;
       }
     }
-    while (templetStr.search(specialChar) !== -1) {
+    while (templeStr.search(specialChar) !== -1) {
       // 数组转成的字符串原本 '特殊字符' 位置都是富文本标签的位置, 替换回标签
       if (matchArr[0]) {
-        templetStr = templetStr.replace(specialChar, matchArr[0].toString());
+        templeStr = templeStr.replace(specialChar, matchArr[0].toString());
         matchArr.splice(0, 1);
       } else {
-        templetStr = templetStr.replace(specialChar, ""); // 空字符串替换,防止死循环
+        templeStr = templeStr.replace(specialChar, ""); // 空字符串替换,防止死循环
         console.warn("matchArr not enough");
       }
     }
@@ -295,7 +304,7 @@ export default class Utils {
     for (let i = 0; i < textArr.length; i++) {
       for (const text of textArr[i]) {
         arrayParm[i] = arrayParm[i] + text;
-        let replaceStr1 = templetStr;
+        let replaceStr1 = templeStr;
         for (let index = 0; index < paraNum; index++) {
           replaceStr1 = replaceStr1.replace(`$[${index}]`, arrayParm[index]);
         }
@@ -314,14 +323,14 @@ export default class Utils {
     };
     richTextNode.schedule(func, speed, cc.macro.REPEAT_FOREVER, 0);
   }
-  bytesToInt(bytes) {
+  bytesToInt(bytes: number[]) {
     let b3 = bytes[3] & 0xff;
     let b2 = bytes[2] & 0xff;
     let b1 = bytes[1] & 0xff;
     let b0 = bytes[0] & 0xff;
     return (b0 << 24) | (b1 << 16) | (b2 << 8) | b3;
   }
-  intToByte4(i) {
+  intToByte4(i: number) {
     let targets = [];
     targets[3] = i & 0xff;
     targets[2] = (i >> 8) & 0xff;
@@ -330,7 +339,7 @@ export default class Utils {
     return targets;
   }
 
-  byteToString(utf8Bytes) {
+  byteToString(utf8Bytes: string | any[]) {
     let unicodeStr = "";
     for (let pos = 0; pos < utf8Bytes.length; ) {
       let flag = utf8Bytes[pos];
@@ -381,10 +390,10 @@ export default class Utils {
     }
     return unicodeStr;
   }
-  stringToBytes(str) {
+  stringToBytes(str: string) {
     let bytes = new Array();
 
-    let len, c;
+    let len: number, c: number;
 
     len = str.length;
 
@@ -416,26 +425,29 @@ export default class Utils {
 
     return bytes;
   }
-  CheckNetMsgErrorCode(errcode) {
-    if (errcode == 0) {
+  CheckNetMsgErrorCode(errCode: number) {
+    if (errCode == 0) {
       return true;
     }
 
-    if (errcode == ErrorCode.ERR_PLAYER_NON_EXISTENT) {
+    if (errCode == ErrorCode.ERR_PLAYER_NON_EXISTENT) {
       uiManager.open(UIID.UICreateRole);
       return;
     }
-    var str = dataManager.GetTextById(Math.floor(errcode * 1000));
+    var str = dataManager.GetTextById(Math.floor(errCode * 1000));
 
     if (!str || str === "") {
-      str = errcode + "";
+      str = errCode + "";
     }
 
     utils.showTips(str);
     return false;
   }
 
-  getRotationTwoPoint(p1, p2) {
+  getRotationTwoPoint(
+    p1: { y: number; x: number },
+    p2: { y: number; x: number }
+  ) {
     let angle = Math.atan2(p1.y - p2.y, p2.x - p1.x); //弧度 -0.6435011087932844, 即 2*Math.PI - 0.6435011087932844
     return angle * (180 / Math.PI); //角度 -36.86989764584402，即360 - 36.86989764584402 = 323.13010235415598
   }
@@ -465,9 +477,9 @@ export default class Utils {
    */
   showUseConfirmView(
     itemID: number,
-    itemNum,
+    itemNum: any,
     content: string,
-    okCall,
+    okCall: any,
     cancelCall = null,
     lblOK: string = null,
     lblCancel: string = null
@@ -493,7 +505,7 @@ export default class Utils {
    */
   showConfirmView(
     content: string,
-    okCall,
+    okCall: any,
     cancelCall = null,
     lblOK: string = null,
     lblCancel: string = null

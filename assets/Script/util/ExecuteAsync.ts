@@ -16,10 +16,14 @@ export class ExecuteAsync {
   }
 
   async createAllItems(arr: any) {
-    await this.executePreFrame(this._getItemGenerator(arr), 1);
+    try {
+      await this.executePreFrame(this._getItemGenerator(arr), 1);
 
-    if (this._nextHandle && this._target) {
-      this._nextHandle.apply(this._target);
+      if (this._nextHandle && this._target) {
+        this._nextHandle.apply(this._target);
+      }
+    } catch (error) {
+      cc.error("createAllItems bad");
     }
   }
 
@@ -62,7 +66,7 @@ export class ExecuteAsync {
   }
 
   private *_getItemGenerator(arr: { [x: string]: any }) {
-    for (var i in arr) {
+    for (let i in arr) {
       yield this._createItemHandle(arr[i]);
     }
   }
